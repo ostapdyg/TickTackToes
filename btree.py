@@ -1,11 +1,12 @@
 from btnode import BTNode
 from random import shuffle
-NUM_BRANCHES = 9
+# 2 for task 3, 9 fr task 4
+NUM_BRANCHES = 2
 
 
 
 class BoardTree(BTNode):
-    PRINTING_LOGS = True
+    PRINTING_LOGS = False
     def __init__(self, board):
         super().__init__(board)
 
