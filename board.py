@@ -1,15 +1,17 @@
 class Board:
+    SIZE = 3
+
     def __init__(self):
-        self.grid = [['', '', ''],
-                     ['', '', ''],
-                     ['', '', '']]
+        self.grid = [[''for _ in range(self.SIZE)]for _ in range(self.SIZE)]
         self.turn = 'X'
 
     def next_turn(self):
         self.turn = ['X', 'O'][self.turn == 'X']
 
     def valid_move(self, row, col):
-        return (row, col) in self.possible_moves()
+        return (0 <= row < self.SIZE)and\
+               (0 <= col < self.SIZE)and\
+               (self.grid[row][col] == '')
 
     def move(self, row, col):
         if not self.valid_move(row, col):
@@ -19,8 +21,8 @@ class Board:
 
     def with_move(self, row, col):
         nb = Board()
-        for r in range(3):
-            for c in range(3):
+        for r in range(self.SIZE):
+            for c in range(self.SIZE):
                 nb.grid[r][c] = self.grid[r][c]
         nb.turn = self.turn
         nb.move(row, col)
@@ -32,23 +34,23 @@ class Board:
         self.grid[row][col] = self.turn
         winning = True
         res = 0
-        for r in range(0, 3):
+        for r in range(self.SIZE):
             if self.grid[r][col] != self.turn:
                 winning = False
         res += winning
         winning = True
-        for c in range(0, 3):
+        for c in range(self.SIZE):
             if self.grid[row][c] != self.turn:
                 winning = False
         res += winning
         winning = True
-        for cell in range(0, 3):
+        for cell in range(self.SIZE):
             if self.grid[cell][cell] != self.turn:
                 winning = False
         res += winning
         winning = True
-        for cell in range(0, 3):
-            if self.grid[cell][2-cell] != self.turn:
+        for cell in range(self.SIZE):
+            if self.grid[cell][self.SIZE-1-cell] != self.turn:
                 winning = False
         res += winning
         self.grid[row][col] = ''
@@ -56,11 +58,67 @@ class Board:
 
     def possible_moves(self):
         res = []
-        for row in range(3):
-            for col in range(3):
+        for row in range(self.SIZE):
+            for col in range(self.SIZE):
                 if not self.grid[row][col]:
                     res.append((row, col))
         return res
 
+    def non_symetric_moves(self):
+        moves = self.possible_moves()
+        res = []
+        for move1 in moves:
+            unique = True
+            for move2 in res:
+                if self.with_move(move1[0], move1[1])\
+                        .symetric_to(self.with_move(move2[0], move2[1])):
+                    unique = False
+            if unique:
+                res.append(move1)
+        return res
+
+    def symetric_to(self, other):
+        """
+
+        :param other:
+        :return:
+        """
+        def _rot(grid):
+            new_grid = [[''for _ in range(self.SIZE)]for _ in range(self.SIZE)]
+            for row in range(self.SIZE):
+                for col in range(self.SIZE):
+                    new_grid[row][col] = grid[col][row]
+            return new_grid
+
+        def _m_y(grid):
+            new_grid = [[''for _ in range(self.SIZE)]for _ in range(self.SIZE)]
+            for row in range(self.SIZE):
+                for col in range(self.SIZE):
+                    new_grid[-1-row][col] = grid[row][col]
+            return new_grid
+
+        def _m_x(grid):
+            new_grid = [[''for _ in range(self.SIZE)]for _ in range(self.SIZE)]
+            for row in range(self.SIZE):
+                for col in range(self.SIZE):
+                    new_grid[row][-1-col] = grid[row][col]
+            return new_grid
+
+        def _m_xy(grid):
+            return _m_x(_m_y(grid))
+
+        if not self.turn == other.turn:
+            return False
+        if self.grid == other.grid:
+            return True
+        for transform in [lambda grid:grid, _m_y, _m_x, _m_xy]:
+            if self.grid == transform(other.grid):
+                return True
+            if self.grid == transform(_rot(other.grid)):
+                return True
+        return False
+
     def __str__(self):
-        return '\n'.join(' '.join((self.grid[row][col]+'.')[0]for col in range(3))for row in range(3))
+        return '\n'.join(' '.join((self.grid[row][col]+'.')[0]
+                                  for col in range(self.SIZE))
+                         for row in range(self.SIZE))

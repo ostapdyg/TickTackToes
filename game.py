@@ -3,7 +3,7 @@ from board import Board
 
 
 class Game:
-    def __init__(self, player='X'):
+    def __init__(self, player='O'):
         self.board = Board()
         self.winner = ''
         self.player = player

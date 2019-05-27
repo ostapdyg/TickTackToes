@@ -1,20 +1,21 @@
 from btnode import BTNode
 from random import shuffle
-NUM_BRANCHES = 9
-
+from board import Board
+NUM_BRANCHES = Board.SIZE*Board.SIZE+1
 
 
 class BoardTree(BTNode):
-    PRINTING_LOGS = True
+    PRINTING_LOGS = False
+
     def __init__(self, board):
         super().__init__(board)
 
-    def Build_bin_tree(self):
+    def build_bin_tree(self):
         """
         Build binary tree with random moves
         :return:
         """
-        moves = self.board.possible_moves()
+        moves = self.board.non_symetric_moves()
         shuffle(moves)
         for move in moves[:NUM_BRANCHES]:
             self.children.append(BoardTree(self.board.with_move(move[0],
@@ -28,7 +29,7 @@ class BoardTree(BTNode):
         Build binary tree with random moves
         :return:
         """
-        moves = self.board.possible_moves()
+        moves = self.board.non_symetric_moves()
         shuffle(moves)
         results = []
         if self.PRINTING_LOGS:
@@ -36,12 +37,12 @@ class BoardTree(BTNode):
                             line for line in
                             str(self.board).split('\n'))
                   )
-
+        if self.PRINTING_LOGS:
+            print(('| ' * depth) + "Possible moves", self.board.turn, moves)
         for move in tuple(moves[:NUM_BRANCHES]):
             if self.PRINTING_LOGS:
                 print(('| ' * depth) + "Considering move:", self.board.turn,
-                  str(move))
-
+                      str(move))
 
             if self.board.winning_move(move[0], move[1]):
                 result = 1, move, 1, [move]
