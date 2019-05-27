@@ -1,7 +1,8 @@
 from btnode import BTNode
 from random import shuffle
-from board import Board
-NUM_BRANCHES = Board.SIZE*Board.SIZE+1
+# 2 for task 3, 9 fr task 4
+NUM_BRANCHES = 2
+
 
 
 class BoardTree(BTNode):
