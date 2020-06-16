@@ -32,26 +32,18 @@ class Board:
         if not self.valid_move(row, col):
             raise ValueError("Wrong coordinates"+str((row, col)))
         self.grid[row][col] = self.turn
-        winning = True
         res = 0
-        for r in range(self.SIZE):
-            if self.grid[r][col] != self.turn:
-                winning = False
+        winning = all(self.grid[r][col] == self.turn for r in range(self.SIZE))
         res += winning
-        winning = True
-        for c in range(self.SIZE):
-            if self.grid[row][c] != self.turn:
-                winning = False
+        winning = all(self.grid[row][c] == self.turn for c in range(self.SIZE))
         res += winning
-        winning = True
-        for cell in range(self.SIZE):
-            if self.grid[cell][cell] != self.turn:
-                winning = False
+        winning = all(self.grid[cell][cell] == self.turn for cell in range(self.SIZE))
         res += winning
-        winning = True
-        for cell in range(self.SIZE):
-            if self.grid[cell][self.SIZE-1-cell] != self.turn:
-                winning = False
+        winning = all(
+            self.grid[cell][self.SIZE - 1 - cell] == self.turn
+            for cell in range(self.SIZE)
+        )
+
         res += winning
         self.grid[row][col] = ''
         return res
@@ -68,11 +60,8 @@ class Board:
         moves = self.possible_moves()
         res = []
         for move1 in moves:
-            unique = True
-            for move2 in res:
-                if self.with_move(move1[0], move1[1])\
-                        .symetric_to(self.with_move(move2[0], move2[1])):
-                    unique = False
+            unique = not any(self.with_move(move1[0], move1[1])\
+                        .symetric_to(self.with_move(move2[0], move2[1])) for move2 in res)
             if unique:
                 res.append(move1)
         return res

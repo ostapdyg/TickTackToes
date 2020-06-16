@@ -38,7 +38,6 @@ class BoardTree(BTNode):
                             line for line in
                             str(self.board).split('\n'))
                   )
-        if self.PRINTING_LOGS:
             print(('| ' * depth) + "Possible moves", self.board.turn, moves)
         for move in tuple(moves[:NUM_BRANCHES]):
             if self.PRINTING_LOGS:
